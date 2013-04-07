@@ -9,20 +9,10 @@
 # Change Log:
 #
 # 01dec97    omh    file creation
-
-
-# Ordering here is important: the second def rules are required to
-# compile correctly
-
-include $(VOBNAME)/Orbix_RT/make/$(WIND_HOST_TYPE).def
-include $(VOBNAME)/Orbix_RT/make/$(TARGET_CPU).def
-
-EXTRATARGETOPTS = -I$(VOBNAME)/Orbix_RT/orb/protocols/include \
-                  -I$(VOBNAME)/Orbix_RT/orb/include           \
-                  -I$(VOBNAME)/Orbix_RT/common/include        \
-                  -I$(VOBNAME)/Orbix_RT/orb/protocols/iiop/include \
-                  -DTORNADO -DCDR_BIG_ENDIAN -DVXWORKS \
-		  -DGIOP_NO_AUTOFRAG
+TARGETLD = /usr/bin/ld
+TARGETNM = /usr/bin/nm
+TARGETCC = /usr/bin/cc
+TARGETMUNCH = /bin/cat
 
 OBJECTS = ./iiop/reader.o ./iiop/init.o ./iiop/iiopmsgp.o       \
           ./iiop/libgiop.o  ./common/fdset.o ./common/skts.o        \
@@ -31,12 +21,6 @@ OBJECTS = ./iiop/reader.o ./iiop/init.o ./iiop/iiopmsgp.o       \
           ./tcpagent/iiopagent.o  
 
 all: IIOP_m blob
-
-check_target_cpu:
-ifeq ($(TARGET_CPU), )
-	@echo "ENVIRONMENT ERROR : must have the TARGET_CPU variable set"
-	@exit 255
-endif
 
 IIOP: $(OBJECTS)
 	$(TARGETLD) -r $(OBJECTS) -o IIOP
@@ -57,10 +41,10 @@ __c.c:
 	$(TARGETNM) $(OBJECTS) | $(TARGETMUNCH) > __c.c
 
 .c.o:
-	$(TARGETCC) -c $(TARGET_CPU) $(TARGETCOPTS) -traditional $<
+	$(TARGETCC) -c $(TARGETCOPTS) -traditional $<
 
 .cc.o:
-	$(TARGETCC) -c $(TARGET_CPU) $(TARGETOPTS) $<
+	$(TARGETCC) -c$(TARGETOPTS) $<
 
 dep:
 	makedepend ) $(SOURCES)
